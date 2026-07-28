@@ -16,34 +16,33 @@
 
 ## 1. Repositório e estrutura inicial
 
-- [ ] Criar repositório e publicar a branch `main`
-- [ ] Proteger a `main`, exigindo Pull Request
+- [ x] Criar repositório e publicar a branch `main`
+- [x ] Proteger a `main`, exigindo Pull Request
 - [ ] Criar branches para as microtasks
 - [ x] Criar estrutura de pastas:
   - [x ] `frontend/`
-  - [ x] `graphql-gateway/`
+  - [x] `graphql-gateway/`
   - [x ] `backend/`
-- [ ] Criar `package.json` e `tsconfig.json` em cada serviço
-- [ ] Configurar ESLint e Prettier
-- [ ] Criar `Dockerfile` inicial em cada serviço
-- [ ] Criar `docker-compose.yml` inicial
-- [ ] Criar `.env.example` e `.gitignore`
-- [ ] Criar `README.md`, `TASKS.md` e `COMMENTS.md`
-- [ ] Criar CI inicial executado em Pull Requests
+- [x ] Criar `package.json` e `tsconfig.json` em cada serviço
+- [x ] Criar `Dockerfile` inicial em cada serviço
+- [x] Criar `docker-compose.yml` inicial
+- [x] Criar `.env.example` e `.gitignore`
+- [x] Criar `README.md`, `TASKS.md` e `COMMENTS.md`
+- [x] Criar CI inicial executado em Pull Requests
 
 ---
 
 ## 2. Banco de dados
 
-- [ ] Criar tabela de sugestões
-- [ ] Criar índice para busca por prefixo
-- [ ] Criar migration inicial
-- [ ] Criar script para executar migrations
-- [ ] Criar arquivo com os dados das sugestões
-- [ ] Criar seed automatizado e idempotente
-- [ ] Configurar pool de conexões com PostgreSQL
-- [ ] Testar migration e seed em banco vazio
-
+- [x] Criar tabela de sugestões
+- [x] Criar índice para busca por prefixo
+- [x] Criar migration inicial
+- [x] Criar script para executar migrations
+- [x] Criar arquivo com os dados das sugestões
+- [x] Criar seed automatizado e idempotente
+- [x] Configurar pool de conexões com PostgreSQL
+- [x] Testar migration e seed em banco vazio
+- [x] Testar exibição da tabela
 ---
 
 ## 3. Backend Fastify

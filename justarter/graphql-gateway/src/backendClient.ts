@@ -10,7 +10,7 @@ const client = axios.create({
 interface Suggestion {
   id: number;
   term: string;
-  count: number;
+  popularity: number;
   createdAt: string;
 }
 
