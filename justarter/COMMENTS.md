@@ -200,16 +200,16 @@ seguindo a referência visual e evitando consultas e respostas desnecessárias?
 
 - A IA sugeriu manter o layout escuro existente. Preferi uma interface clara e simples, semelhante à referência do desafio.
 
-### Validações executadas
+### Análise do `starter/suggestions.js`
+Eu manteria a verificação que interrompe a busca quando o usuário digita menos de quatro caracteres. Isso evita fazer uma requisição desnecessária e o setSuggestions([]) também limpa as sugestões da busca anterior que ainda poderiam estar aparecendo na tela.
 
-- Lint e build concluídos sem erros.
-- 9 testes aprovados, incluindo debounce, limite, seleção e resposta antiga.
-- 12 testes do backend aprovados e novo índice confirmado na busca sem acento.
-- Layout conferido em dimensões desktop e mobile.
-- Digitação, atualização e seleção validadas no Chrome com os serviços em
-  Docker.
-- Seed ampliado para 75 termos; a busca por `acao` renderizou 20 opções, com 10
-  visíveis antes do scroll.
+Eu mudaria a forma como o fetch está sendo usado. Como o projeto utiliza GraphQL e Apollo Client, achei melhor deixar a busca responsável por essa ferramenta, seguindo o padrão já utilizado no projeto.
+
+Também não utilizaria o slice(0, 10), pois ele limita os resultados a apenas dez sugestões. Isso poderia impedir que outros resultados fossem exibidos quando o usuário utilizasse o scroll.
+
+Além disso, adicionei um debounce. Ele faz com que a busca espere alguns instantes após o usuário parar de digitar, evitando uma nova requisição a cada tecla pressionada.
+
+Antes de utilizar esse código em produção, ainda seria importante tratar possíveis erros de conexão ou respostas inválidas do servidor. Também seria necessário evitar que uma busca antiga e mais lenta substituísse o resultado de uma busca mais recente.
 
 ---
 
