@@ -6,6 +6,8 @@ export const MAX_SUGGESTIONS = 20;
 
 export function normalizeSearchTerm(term: string): string {
   return term
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
     .normalize("NFC")
     .trim()
     .replace(/\s+/gu, " ")

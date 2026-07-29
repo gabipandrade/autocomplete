@@ -66,7 +66,7 @@ idempotente e pool de conexões respeitando a arquitetura existente?
 
 - Migration e seed aplicados em banco temporário vazio.
 - Estrutura da tabela conferida.
-- Seed confirmado com 40 sugestões, sem duplicações.
+- Seed inicial confirmado com 40 sugestões, sem duplicações.
 - Índice validado como elegível para a consulta por prefixo.
 - Inicialização automática validada com Docker Compose.
 
@@ -172,3 +172,43 @@ testes mantendo o limite de 20 sugestões e um timeout adequado ao autocomplete?
 - Query com termo e limite validada no fluxo GraphQL → Fastify → PostgreSQL.
 - Termo com menos de 4 caracteres retornou uma lista vazia.
 - Com o backend interrompido, o gateway também retornou uma lista vazia.
+
+---
+
+## Etapa 5 — Frontend React
+Implementei a parte visual da interface de autocomplete
+
+### Uso de IA
+
+**Pergunta:** como implementar o autocomplete com React e Apollo Client,
+seguindo a referência visual e evitando consultas e respostas desnecessárias?
+
+**O que aceitei:**
+
+- Debounce de 250 ms.
+- Proteção contra respostas antigas e navegação por teclado.
+
+**O que alterei:**
+
+- Do código `starter/suggestions.js`, mantive apenas a regra dos quatro
+  caracteres. A lista terá até 20 itens, com cerca de 10 visíveis antes do
+  scroll, em vez de descartar os demais com `slice(0, 10)`.
+- Após o teste manual com `acao`, tornei a busca do backend indiferente a
+  acentos e mantive o termo original na resposta.
+
+**O que rejeitei:**
+
+- A IA sugeriu manter o layout escuro existente. Preferi uma interface clara e simples, semelhante à referência do desafio.
+
+### Validações executadas
+
+- Lint e build concluídos sem erros.
+- 9 testes aprovados, incluindo debounce, limite, seleção e resposta antiga.
+- 12 testes do backend aprovados e novo índice confirmado na busca sem acento.
+- Layout conferido em dimensões desktop e mobile.
+- Digitação, atualização e seleção validadas no Chrome com os serviços em
+  Docker.
+- Seed ampliado para 75 termos; a busca por `acao` renderizou 20 opções, com 10
+  visíveis antes do scroll.
+
+

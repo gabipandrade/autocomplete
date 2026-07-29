@@ -4,10 +4,16 @@ import "./App.css";
 function App() {
   return (
     <main className="app-shell">
-      <section className="hero">
-        <h1>Justarter</h1>
-        <p>Busque sugestões com uma API GraphQL e um backend em PostgreSQL.</p>
-        <SearchBox />
+      <section className="search-page" aria-labelledby="page-title">
+        <div className="brand-mark" aria-hidden="true">
+          J
+        </div>
+
+        <div className="search-content">
+          <h1 id="page-title">Busca com Autocompletar</h1>
+          <p>Digite no campo abaixo para exibir as sugestões</p>
+          <SearchBox />
+        </div>
       </section>
     </main>
   );

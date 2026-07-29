@@ -15,13 +15,17 @@ describe("PostgresSuggestionRepository", () => {
     });
     const repository = new PostgresSuggestionRepository({ query } as never);
 
-    const result = await repository.findByPrefix("danos", 20);
+    const result = await repository.findByPrefix("acao", 20);
 
     expect(query).toHaveBeenCalledWith(
       expect.stringContaining(
         "ORDER BY popularity DESC, lower(term) ASC, term ASC",
       ),
-      ["danos%", 20],
+      ["acao%", 20],
+    );
+    expect(query).toHaveBeenCalledWith(
+      expect.stringContaining("lower(public.immutable_unaccent(term)) LIKE $1"),
+      expect.any(Array),
     );
     expect(result).toEqual([
       {
