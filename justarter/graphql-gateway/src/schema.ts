@@ -1,17 +1,17 @@
-export const typeDefs = `
+export const typeDefs = `#graphql
   type Suggestion {
-    id: Int!
+    id: ID!
     term: String!
     popularity: Int!
     createdAt: String!
   }
 
   type Query {
-    suggestions(q: String!): [Suggestion!]!
-    suggestionById(id: Int!): Suggestion
+    suggestions(query: String!, limit: Int = 20): [Suggestion!]!
+    suggestionById(id: ID!): Suggestion
   }
 
   type Mutation {
-    createSuggestion(term: String!): Suggestion!
+    createSuggestion(term: String!): Suggestion
   }
 `;

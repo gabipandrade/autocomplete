@@ -65,27 +65,35 @@
 
 ## 4. GraphQL Gateway
 
-- [ ] Configurar Apollo Server
-- [ ] Criar tipo `Suggestion`
-- [ ] Criar query GraphQL de sugestões
-- [ ] Criar cliente HTTP para chamar o backend
-- [ ] Criar resolver GraphQL
-- [ ] Aplicar mínimo de 4 caracteres e limite 20
-- [ ] Configurar timeout e tratamento de erros
-- [ ] Criar testes do cliente HTTP
-- [ ] Criar testes do resolver
-- [ ] Criar teste da query GraphQL
+- [x] Configurar Apollo Server
+- [x] Criar tipo `Suggestion`
+- [x] Criar query GraphQL de sugestões
+- [x] Criar cliente HTTP para chamar o backend
+- [x] Criar resolver GraphQL
+- [x] Aplicar mínimo de 4 caracteres e limite 20
+- [x] Configurar timeout e tratamento de erros
+- [x] Criar testes do cliente HTTP
+- [x] Criar testes do resolver
+- [x] Criar teste da query GraphQL
+- [x] Validar lint, testes e build do gateway na CI
 
-### Schema planejado
+### Schema implementado
 
 ```graphql
 type Suggestion {
   id: ID!
-  text: String!
+  term: String!
+  popularity: Int!
+  createdAt: String!
 }
 
 type Query {
   suggestions(query: String!, limit: Int = 20): [Suggestion!]!
+  suggestionById(id: ID!): Suggestion
+}
+
+type Mutation {
+  createSuggestion(term: String!): Suggestion
 }
 ```
 
@@ -129,7 +137,7 @@ type Query {
 - [ ] Executar seed automaticamente
 - [ ] Garantir que migrations e seed sejam idempotentes
 - [ ] Expor somente as portas necessárias
-- [ ] Validar configuração com `docker compose config`
+- [x] Validar configuração com `docker compose config`
 - [ ] Testar execução com `docker compose up --build`
 - [ ] Testar o projeto em ambiente limpo
 - [ ] Confirmar o fluxo React → GraphQL → Backend → PostgreSQL
@@ -140,13 +148,13 @@ type Query {
 
 ### CI e qualidade
 
-- [ ] Executar CI em cada Pull Request
-- [ ] Rodar lint no frontend
-- [ ] Rodar lint no GraphQL Gateway
-- [ ] Rodar lint no backend
-- [ ] Rodar testes de cada serviço
-- [ ] Rodar build de cada serviço
-- [ ] Validar o `docker-compose.yml`
+- [x] Executar CI em cada Pull Request
+- [x] Rodar lint no frontend
+- [x] Rodar lint no GraphQL Gateway
+- [x] Rodar lint no backend
+- [x] Rodar testes de cada serviço
+- [x] Rodar build de cada serviço
+- [x] Validar o `docker-compose.yml`
 - [ ] Configurar o CI como verificação obrigatória da branch `main`
 
 ### Documentação

@@ -2,7 +2,7 @@
 
 Aplicação de autocompletar com React, GraphQL, Fastify e PostgreSQL.
 
-## Executando o PostgreSQL e o backend
+## Executando o PostgreSQL, o backend e o GraphQL
 
 É necessário ter Docker e Docker Compose instalados.
 
@@ -12,10 +12,10 @@ Entre na pasta da aplicação:
 cd justarter
 ```
 
-Suba o PostgreSQL e o backend:
+Suba o PostgreSQL, o backend Fastify e o GraphQL Gateway:
 
 ```bash
-docker compose up -d --build postgres backend
+docker compose up -d --build postgres backend graphql-gateway
 ```
 
 O backend aguarda o PostgreSQL ficar disponível e executa automaticamente:
@@ -31,6 +31,7 @@ docker compose ps
 
 Os serviços ficam disponíveis em:
 
+- GraphQL Gateway: `http://localhost:4000`
 - Backend Fastify: `http://localhost:3001`
 - PostgreSQL: `localhost:5434`
 
@@ -104,17 +105,135 @@ curl -i "http://localhost:3001/suggestions"
 curl -i "http://localhost:3001/suggestions?q=danos&limit=21"
 ```
 
+## Testando o GraphQL Gateway
+
+O frontend deve acessar o GraphQL Gateway, que consulta o backend Fastify.
+
+Fluxo:
+
+```text
+Frontend → GraphQL Gateway → Backend Fastify → PostgreSQL
+```
+
+### Query de sugestões
+
+```graphql
+type Suggestion {
+  id: ID!
+  term: String!
+  popularity: Int!
+  createdAt: String!
+}
+
+type Query {
+  suggestions(query: String!, limit: Int = 20): [Suggestion!]!
+}
+```
+
+O argumento `query` é obrigatório. `limit` é opcional e nunca ultrapassa 20.
+
+Teste a query:
+
+```bash
+curl http://localhost:4000/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "query($query: String!, $limit: Int) { suggestions(query: $query, limit: $limit) { id term popularity createdAt } }",
+    "variables": {
+      "query": "danos",
+      "limit": 2
+    }
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "data": {
+    "suggestions": [
+      {
+        "id": "23",
+        "term": "danos morais",
+        "popularity": 110,
+        "createdAt": "2026-07-28T16:33:48.183Z"
+      },
+      {
+        "id": "22",
+        "term": "danos materiais",
+        "popularity": 96,
+        "createdAt": "2026-07-28T16:33:48.183Z"
+      }
+    ]
+  }
+}
+```
+
+Termos com menos de 4 caracteres retornam uma lista vazia. Se o backend estiver
+indisponível ou exceder o timeout, o gateway também retorna uma lista vazia.
+
+O timeout padrão da comunicação com o backend é de 2 segundos e pode ser
+alterado pela variável `BACKEND_TIMEOUT_MS`.
+
+O schema mantém temporariamente `suggestionById` e `createSuggestion`, mas o
+backend atual não oferece essas operações. Elas retornam `null` até serem
+implementadas ou removidas.
+
 ## Executando os testes automatizados
+
+### Backend
 
 ```bash
 cd backend
 npm install
+npm run lint
 npm run build
 npm test
 cd ..
 ```
 
-O backend possui testes do repository, do serviço de busca e das rotas Fastify.
+O backend possui 11 testes do repository, do serviço e das rotas Fastify.
+
+### GraphQL Gateway
+
+```bash
+cd graphql-gateway
+npm install
+npm run lint
+npm run build
+npm test
+cd ..
+```
+
+O gateway possui 10 testes do cliente HTTP, dos resolvers e da query GraphQL.
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run lint
+npm run build
+npm test
+cd ..
+```
+
+O frontend possui lint, teste de componente e build de produção configurados.
+
+## Integração contínua
+
+O workflow `.github/workflows/ci.yml` é executado em:
+
+- todo Pull Request;
+- todo push na branch `main`.
+
+A CI cria jobs independentes para backend, GraphQL Gateway e frontend. Cada job
+instala as dependências pelo lockfile e executa lint, testes e build. Um job
+adicional valida o arquivo `docker-compose.yml`.
+
+Para tornar a CI obrigatória antes de integrar um Pull Request, configure a
+proteção da branch `main` no GitHub e selecione os jobs da CI como verificações
+obrigatórias.
 
 ## Consultando o PostgreSQL
 
@@ -142,7 +261,7 @@ Para sair do terminal, digite:
 Para acompanhar a inicialização, as migrations e as requisições:
 
 ```bash
-docker compose logs -f backend
+docker compose logs -f backend graphql-gateway
 ```
 
 ## Encerrando
@@ -157,7 +276,7 @@ Para apagar o banco e recriá-lo do zero:
 
 ```bash
 docker compose down -v
-docker compose up -d --build postgres backend
+docker compose up -d --build postgres backend graphql-gateway
 ```
 
 O comando `docker compose down -v` remove permanentemente o volume local do PostgreSQL.
