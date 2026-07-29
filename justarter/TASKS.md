@@ -101,22 +101,22 @@ type Mutation {
 
 ## 5. Frontend React
 
-- [ ] Criar aplicação React com Vite
-- [ ] Configurar Apollo Client
-- [ ] Criar layout responsivo da página de busca
-- [ ] Criar componente com campo de pesquisa
-- [ ] Não realizar consulta com menos de 4 caracteres
-- [ ] Implementar debounce para evitar requisições excessivas
-- [ ] Criar query para o GraphQL Gateway
-- [ ] Tratar carregamento, erros e ausência de resultados
-- [ ] Ignorar respostas de pesquisas antigas
-- [ ] Renderizar no máximo 20 sugestões
-- [ ] Exibir cerca de 10 itens e permitir acesso aos demais por scroll
-- [ ] Destacar em negrito o trecho correspondente ao termo pesquisado
-- [ ] Destacar a sugestão ao passar o mouse ou tocar no item
-- [ ] Atualizar o campo de busca ao selecionar uma sugestão
-- [ ] Ocultar a lista quando não houver sugestões
-- [ ] Criar testes dos principais comportamentos
+- [x] Criar aplicação React com Vite
+- [x] Configurar Apollo Client
+- [x] Criar layout responsivo da página de busca
+- [x] Criar componente com campo de pesquisa
+- [x] Não realizar consulta com menos de 4 caracteres
+- [x] Implementar debounce para evitar requisições excessivas
+- [x] Criar query para o GraphQL Gateway
+- [x] Tratar carregamento, erros e ausência de resultados
+- [x] Ignorar respostas de pesquisas antigas
+- [x] Renderizar no máximo 20 sugestões
+- [x] Exibir cerca de 10 itens e permitir acesso aos demais por scroll
+- [x] Destacar em negrito o trecho correspondente ao termo pesquisado
+- [x] Destacar a sugestão ao passar o mouse ou tocar no item
+- [x] Atualizar o campo de busca ao selecionar uma sugestão
+- [x] Ocultar a lista quando não houver sugestões
+- [x] Criar testes dos principais comportamentos
 
 ---
 
@@ -138,7 +138,7 @@ type Mutation {
 - [ ] Garantir que migrations e seed sejam idempotentes
 - [ ] Expor somente as portas necessárias
 - [x] Validar configuração com `docker compose config`
-- [ ] Testar execução com `docker compose up --build`
+- [x] Testar execução com `docker compose up --build`
 - [ ] Testar o projeto em ambiente limpo
 - [ ] Confirmar o fluxo React → GraphQL → Backend → PostgreSQL
 
@@ -155,7 +155,7 @@ type Mutation {
 - [x] Rodar testes de cada serviço
 - [x] Rodar build de cada serviço
 - [x] Validar o `docker-compose.yml`
-- [ ] Configurar o CI como verificação obrigatória da branch `main`
+- [x] Configurar o CI como verificação obrigatória da branch `main`
 
 ### Documentação
 

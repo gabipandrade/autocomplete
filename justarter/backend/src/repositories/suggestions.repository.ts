@@ -21,7 +21,7 @@ export class PostgresSuggestionRepository implements SuggestionRepository {
     const result = await this.database.query<SuggestionRow>(
       `SELECT id, term, popularity, created_at AS "createdAt"
        FROM suggestions
-       WHERE lower(term) LIKE $1 ESCAPE '\\'
+       WHERE lower(public.immutable_unaccent(term)) LIKE $1 ESCAPE '\\'
        ORDER BY popularity DESC, lower(term) ASC, term ASC
        LIMIT $2`,
       [`${escapedTerm}%`, limit],

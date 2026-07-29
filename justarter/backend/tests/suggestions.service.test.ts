@@ -14,7 +14,11 @@ function createRepositoryMock(): SuggestionRepository {
 
 describe("SuggestionsService", () => {
   it("normaliza espaços, letras maiúsculas e caracteres Unicode", () => {
-    expect(normalizeSearchTerm("  AÇÃO   Civil  ")).toBe("ação civil");
+    expect(normalizeSearchTerm("  AÇÃO   Civil  ")).toBe("acao civil");
+  });
+
+  it("normaliza termos digitados com ou sem acento para a mesma busca", () => {
+    expect(normalizeSearchTerm("ação")).toBe(normalizeSearchTerm("acao"));
   });
 
   it("não consulta o repository quando o termo tem menos de 4 caracteres", async () => {
