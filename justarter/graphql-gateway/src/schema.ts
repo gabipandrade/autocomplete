@@ -2,7 +2,7 @@ export const typeDefs = `
   type Suggestion {
     id: Int!
     term: String!
-    count: Int!
+    popularity: Int!
     createdAt: String!
   }
 

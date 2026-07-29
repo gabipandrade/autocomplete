@@ -17,7 +17,7 @@ describe("GraphQL Resolvers", () => {
 
     it("should call backend API if query >= 4 chars", async () => {
       const mockSuggestions = [
-        { id: 1, term: "test", count: 5, createdAt: "2024-01-01" },
+        { id: 1, term: "test", popularity: 5, createdAt: "2024-01-01" },
       ];
 
       vi.spyOn(backendClient.backendAPI, "getSuggestions").mockResolvedValue(
@@ -40,7 +40,7 @@ describe("GraphQL Resolvers", () => {
       const mockSuggestion = {
         id: 1,
         term: "test",
-        count: 1,
+        popularity: 1,
         createdAt: "2024-01-01",
       };
 

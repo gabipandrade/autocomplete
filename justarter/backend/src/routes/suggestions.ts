@@ -13,7 +13,7 @@ router.get("/", async (req: Request, res: Response) => {
     }
 
     const result = await query(
-      "SELECT id, term, count, created_at as createdAt FROM suggestions WHERE term ILIKE $1 LIMIT 20",
+      "SELECT id, term, popularity, created_at as createdAt FROM suggestions WHERE term ILIKE $1 LIMIT 20",
       [`${q}%`]
     );
 
@@ -30,7 +30,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const result = await query(
-      "SELECT id, term, count, created_at as createdAt FROM suggestions WHERE id = $1",
+      "SELECT id, term, popularity, created_at as createdAt FROM suggestions WHERE id = $1",
       [id]
     );
 
@@ -55,10 +55,11 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     const result = await query(
-      `INSERT INTO suggestions (term, count, created_at) 
+      `INSERT INTO suggestions (term, popularity, created_at)
        VALUES ($1, 1, NOW()) 
-       ON CONFLICT (term) DO UPDATE SET count = count + 1 
-       RETURNING id, term, count, created_at as createdAt`,
+       ON CONFLICT (term) DO UPDATE
+       SET popularity = suggestions.popularity + 1
+       RETURNING id, term, popularity, created_at as createdAt`,
       [term.toLowerCase()]
     );
 

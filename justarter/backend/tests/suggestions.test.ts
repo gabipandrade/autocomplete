@@ -11,7 +11,7 @@ describe("Suggestions API", () => {
   describe("GET /api/suggestions", () => {
     it("should return suggestions matching query", async () => {
       const mockSuggestions = [
-        { id: 1, term: "test", count: 5, createdAt: "2024-01-01" },
+        { id: 1, term: "test", popularity: 5, createdAt: "2024-01-01" },
       ];
 
       vi.spyOn(db, "query").mockResolvedValue({ rows: mockSuggestions } as any);
