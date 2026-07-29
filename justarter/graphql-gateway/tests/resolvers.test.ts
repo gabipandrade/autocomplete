@@ -1,57 +1,58 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { resolvers } from "../src/resolvers.js";
-import * as backendClient from "../src/backendClient.js";
+import { describe, expect, it, vi } from "vitest";
+import type { BackendAPI } from "../src/backendClient.js";
+import { createResolvers } from "../src/resolvers.js";
 
-vi.mock("../src/backendClient.js");
+function createBackendMock(): BackendAPI {
+  return {
+    getSuggestions: vi.fn().mockResolvedValue([]),
+    getSuggestionById: vi.fn().mockResolvedValue(null),
+    createSuggestion: vi.fn().mockResolvedValue(null),
+  };
+}
 
-describe("GraphQL Resolvers", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+describe("GraphQL resolvers", () => {
+  it("retorna lista vazia para termos com menos de 4 caracteres", async () => {
+    const backend = createBackendMock();
+    const resolvers = createResolvers(backend);
+
+    await expect(
+      resolvers.Query.suggestions(null, { query: " abc " }),
+    ).resolves.toEqual([]);
+    expect(backend.getSuggestions).not.toHaveBeenCalled();
   });
 
-  describe("Query.suggestions", () => {
-    it("should return empty array if query < 4 chars", async () => {
-      const result = await resolvers.Query.suggestions(null, { q: "abc" });
-      expect(result).toEqual([]);
+  it("normaliza o termo e limita o resultado a 20", async () => {
+    const backend = createBackendMock();
+    const resolvers = createResolvers(backend);
+
+    await resolvers.Query.suggestions(null, {
+      query: "  DANOS  ",
+      limit: 50,
     });
 
-    it("should call backend API if query >= 4 chars", async () => {
-      const mockSuggestions = [
-        { id: 1, term: "test", popularity: 5, createdAt: "2024-01-01" },
-      ];
-
-      vi.spyOn(backendClient.backendAPI, "getSuggestions").mockResolvedValue(
-        mockSuggestions
-      );
-
-      const result = await resolvers.Query.suggestions(null, { q: "test" });
-      expect(result).toEqual(mockSuggestions);
-    });
+    expect(backend.getSuggestions).toHaveBeenCalledWith("danos", 20);
   });
 
-  describe("Mutation.createSuggestion", () => {
-    it("should throw error if term < 4 chars", async () => {
-      await expect(
-        resolvers.Mutation.createSuggestion(null, { term: "abc" })
-      ).rejects.toThrow("Term must be at least 4 characters long");
+  it("retorna lista vazia quando o cliente lança um erro", async () => {
+    const backend = createBackendMock();
+    vi.mocked(backend.getSuggestions).mockRejectedValue(new Error("offline"));
+    const resolvers = createResolvers(backend);
+
+    await expect(
+      resolvers.Query.suggestions(null, { query: "danos" }),
+    ).resolves.toEqual([]);
+  });
+
+  it("mantém os resolvers de consulta por ID e criação", async () => {
+    const backend = createBackendMock();
+    const resolvers = createResolvers(backend);
+
+    await resolvers.Query.suggestionById(null, { id: "10" });
+    await resolvers.Mutation.createSuggestion(null, {
+      term: "  TESTE Jurídico ",
     });
 
-    it("should create suggestion if term >= 4 chars", async () => {
-      const mockSuggestion = {
-        id: 1,
-        term: "test",
-        popularity: 1,
-        createdAt: "2024-01-01",
-      };
-
-      vi.spyOn(backendClient.backendAPI, "createSuggestion").mockResolvedValue(
-        mockSuggestion
-      );
-
-      const result = await resolvers.Mutation.createSuggestion(null, {
-        term: "test",
-      });
-      expect(result).toEqual(mockSuggestion);
-    });
+    expect(backend.getSuggestionById).toHaveBeenCalledWith(10);
+    expect(backend.createSuggestion).toHaveBeenCalledWith("teste jurídico");
   });
 });

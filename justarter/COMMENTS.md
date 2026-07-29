@@ -110,7 +110,8 @@ serviço de busca, normalização, limite de 20 resultados, validação e testes
 **O que rejeitei:**
 
 - A IA sugeriu, como melhoria opcional, fazer o healthcheck consultar também o
-  PostgreSQL. Decidi não incluir essa verificação nesta etapa porque a tarefa para essa parte inclui apenas um healthcheck da aplicação, já que o banco já possui seu
+  PostgreSQL. Decidi não incluir essa verificação nesta etapa porque a tarefa
+  solicita apenas o healthcheck da aplicação, enquanto o banco já possui seu
   próprio healthcheck no Docker Compose.
 - Não houve outras sugestões relevantes da IA rejeitadas nesta etapa. As demais
   foram aceitas ou ajustadas durante a revisão.
@@ -124,4 +125,50 @@ serviço de busca, normalização, limite de 20 resultados, validação e testes
 - Limite acima de 20 retornou HTTP 400.
 
 ### Melhorias futuras
+
 - Automatizar testes de integração com PostgreSQL no CI.
+
+---
+
+## Etapa 4 — GraphQL Gateway
+
+### Uso de IA
+
+**Pergunta:** como estruturar o Apollo Server, o cliente HTTP, os resolvers e os
+testes mantendo o limite de 20 sugestões e um timeout adequado ao autocomplete?
+
+**O que aceitei:**
+
+- Adotar `suggestions(query: String!, limit: Int = 20)`.
+- Manter no tipo `Suggestion` os campos `id`, `term`, `popularity` e
+  `createdAt`.
+- Utilizar timeout configurável, com padrão de 2 segundos.
+- Separar a criação do Apollo Server para permitir testes da query sem abrir
+  uma porta de rede.
+- Criar um cliente HTTP injetável.
+- Normalizar o termo e limitar o valor solicitado a 20 antes de chamar o
+  backend.
+
+**O que alterei:**
+
+- Substituí o argumento `q` por `query` e adicionei `limit` com padrão 20.
+- Alterei o cliente para usar a rota canônica `/suggestions`.
+- Reduzi o log de falhas HTTP para código e mensagem, evitando imprimir o
+  objeto completo do Axios.
+- Decidi antecipar uma parte da etapa de CI para validar o gateway durante esta entrega.
+
+**O que rejeitei:**
+
+- A IA sugeriu retornar um erro GraphQL quando o backend estivesse
+  indisponível. Decidi retornar `[]`.
+- A IA sugeriu remover `suggestionById` e `createSuggestion` por não fazerem
+  parte do autocomplete. Decidi mantê-los temporariamente.
+
+### Validações executadas
+
+- Build TypeScript concluído sem erros.
+- 10 testes aprovados entre cliente HTTP, resolvers e query GraphQL.
+- Validação do gateway na CI concluída com sucesso.
+- Query com termo e limite validada no fluxo GraphQL → Fastify → PostgreSQL.
+- Termo com menos de 4 caracteres retornou uma lista vazia.
+- Com o backend interrompido, o gateway também retornou uma lista vazia.

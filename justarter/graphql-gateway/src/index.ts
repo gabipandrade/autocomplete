@@ -1,14 +1,13 @@
-import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import { typeDefs } from "./schema.js";
-import { resolvers } from "./resolvers.js";
+import { buildApolloServer } from "./server.js";
 
 const port = Number(process.env.PORT ?? 4000);
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-});
+if (!Number.isInteger(port) || port < 1 || port > 65535) {
+  throw new Error("PORT deve ser um número inteiro entre 1 e 65535");
+}
+
+const server = buildApolloServer();
 
 const { url } = await startStandaloneServer(server, {
   listen: { port },
