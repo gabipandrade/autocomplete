@@ -43,22 +43,23 @@
 - [x] Configurar pool de conexões com PostgreSQL
 - [x] Testar migration e seed em banco vazio
 - [x] Testar exibição da tabela
+
 ---
 
 ## 3. Backend Fastify
 
-- [ ] Criar aplicação Fastify
-- [ ] Criar rota de healthcheck
-- [ ] Criar camada de repository
-- [ ] Criar serviço de busca de sugestões
-- [ ] Normalizar termo pesquisado
-- [ ] Aplicar mínimo de 4 caracteres
-- [ ] Aplicar limite máximo de 20 resultados
-- [ ] Ordenar por popularidade e ordem alfabética
-- [ ] Criar rota `GET /suggestions`
-- [ ] Validar parâmetros de entrada
-- [ ] Tratar erros
-- [ ] Criar testes do serviço e da rota
+- [x] Criar aplicação Fastify
+- [x] Criar rota de healthcheck
+- [x] Criar camada de repository
+- [x] Criar serviço de busca de sugestões
+- [x] Normalizar termo pesquisado
+- [x] Aplicar mínimo de 4 caracteres
+- [x] Aplicar limite máximo de 20 resultados
+- [x] Ordenar por popularidade e ordem alfabética
+- [x] Criar rota `GET /suggestions`
+- [x] Validar parâmetros de entrada
+- [x] Tratar erros
+- [x] Criar testes do repository, do serviço e da rota
 
 ---
 
