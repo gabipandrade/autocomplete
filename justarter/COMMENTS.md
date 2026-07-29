@@ -211,4 +211,19 @@ seguindo a referência visual e evitando consultas e respostas desnecessárias?
 - Seed ampliado para 75 termos; a busca por `acao` renderizou 20 opções, com 10
   visíveis antes do scroll.
 
+---
 
+## Etapa 6 — Docker Compose
+
+Configurei healthchecks, dependências, volume e variáveis. Mantive públicas
+somente as portas do frontend e do gateway.
+
+### Uso de IA
+
+- **Pergunta:** como fazer o Compose iniciar todos os serviços com segurança?
+- **Aceitei:** healthchecks e dependências por estado saudável.
+- **Alterei:** removi do host as portas do backend e do banco.
+- **Rejeitei:** não houve sugestão relevante rejeitada nesta correção.
+
+O ambiente limpo subiu com migrations, seed e 75 sugestões. O fluxo completo
+retornou 20 resultados para `acao`.

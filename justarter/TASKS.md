@@ -122,25 +122,25 @@ type Mutation {
 
 ## 6. Docker Compose e integração
 
-- [ ] Configurar os serviços:
-  - [ ] `frontend`
-  - [ ] `graphql-gateway`
-  - [ ] `backend`
-  - [ ] `database`
-- [ ] Configurar variáveis de ambiente entre os serviços
-- [ ] Criar volume persistente para o PostgreSQL
-- [ ] Criar healthcheck do banco de dados
-- [ ] Criar healthcheck do backend
-- [ ] Criar healthcheck do GraphQL Gateway
-- [ ] Configurar `depends_on` e ordem de inicialização
-- [ ] Executar migrations automaticamente
-- [ ] Executar seed automaticamente
-- [ ] Garantir que migrations e seed sejam idempotentes
-- [ ] Expor somente as portas necessárias
+- [x] Configurar os serviços:
+  - [x] `frontend`
+  - [x] `graphql-gateway`
+  - [x] `backend`
+  - [x] `database`
+- [x] Configurar variáveis de ambiente entre os serviços
+- [x] Criar volume persistente para o PostgreSQL
+- [x] Criar healthcheck do banco de dados
+- [x] Criar healthcheck do backend
+- [x] Criar healthcheck do GraphQL Gateway
+- [x] Configurar `depends_on` e ordem de inicialização
+- [x] Executar migrations automaticamente
+- [x] Executar seed automaticamente
+- [x] Garantir que migrations e seed sejam idempotentes
+- [x] Expor somente as portas necessárias
 - [x] Validar configuração com `docker compose config`
 - [x] Testar execução com `docker compose up --build`
-- [ ] Testar o projeto em ambiente limpo
-- [ ] Confirmar o fluxo React → GraphQL → Backend → PostgreSQL
+- [x] Testar o projeto em ambiente limpo
+- [x] Confirmar o fluxo React → GraphQL → Backend → PostgreSQL
 
 ---
 
