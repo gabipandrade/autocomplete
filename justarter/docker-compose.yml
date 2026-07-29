@@ -4,60 +4,91 @@ services:
     container_name: justarter-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: justarter
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "${POSTGRES_PORT:-5434}:5432"
+      POSTGRES_DB: ${POSTGRES_DB:-justarter}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    expose:
+      - "5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d justarter"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
 
   backend:
     build:
       context: ./backend
     container_name: justarter-backend
+    restart: unless-stopped
     environment:
       PORT: 3001
       PGHOST: postgres
       PGPORT: 5432
-      PGUSER: postgres
-      PGPASSWORD: postgres
-      PGDATABASE: justarter
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      PGDATABASE: ${POSTGRES_DB:-justarter}
+      PGPOOL_MAX: ${PGPOOL_MAX:-10}
+      PG_IDLE_TIMEOUT_MS: ${PG_IDLE_TIMEOUT_MS:-30000}
+      PG_CONNECTION_TIMEOUT_MS: ${PG_CONNECTION_TIMEOUT_MS:-5000}
     depends_on:
       postgres:
         condition: service_healthy
     command: ["sh", "-c", "npm run db:setup && npm run dev"]
-    ports:
-      - "3001:3001"
+    expose:
+      - "3001"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3001/health"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
 
   graphql-gateway:
     build:
       context: ./graphql-gateway
     container_name: justarter-gateway
+    restart: unless-stopped
     environment:
       PORT: 4000
       BACKEND_URL: http://backend:3001
-      BACKEND_TIMEOUT_MS: 2000
+      BACKEND_TIMEOUT_MS: ${BACKEND_TIMEOUT_MS:-2000}
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     ports:
-      - "4000:4000"
+      - "${GATEWAY_PORT:-4000}:4000"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- --header='Content-Type: application/json' --post-data='{\"query\":\"{ __typename }\"}' http://127.0.0.1:4000/ | grep -q '\"data\"'",
+        ]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
 
   frontend:
     build:
       context: ./frontend
     container_name: justarter-frontend
+    restart: unless-stopped
     environment:
-      VITE_GRAPHQL_URL: http://localhost:4000/
+      VITE_GRAPHQL_URL: ${VITE_GRAPHQL_URL:-http://localhost:4000/}
     depends_on:
-      - graphql-gateway
+      graphql-gateway:
+        condition: service_healthy
     ports:
-      - "5173:5173"
+      - "${FRONTEND_PORT:-5173}:5173"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:5173/"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
 
 volumes:
   postgres-data:
