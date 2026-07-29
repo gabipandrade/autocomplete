@@ -2,7 +2,18 @@
 
 Aplicação de autocompletar com React, GraphQL, Fastify e PostgreSQL.
 
-## Executando o PostgreSQL, o backend e o GraphQL
+## Arquitetura
+
+```text
+React → GraphQL Gateway → Backend Fastify → PostgreSQL
+```
+
+- O frontend renderiza o autocomplete e acessa somente o GraphQL Gateway.
+- O gateway expõe o schema GraphQL e chama a API REST do backend.
+- O backend aplica validações, regras de busca e acesso ao banco.
+- O PostgreSQL armazena e ordena as sugestões por popularidade.
+
+## Executando a aplicação
 
 É necessário ter Docker e Docker Compose instalados.
 
@@ -12,16 +23,16 @@ Entre na pasta da aplicação:
 cd justarter
 ```
 
-Suba o PostgreSQL, o backend Fastify e o GraphQL Gateway:
+Suba o frontend, o GraphQL Gateway, o backend Fastify e o PostgreSQL:
 
 ```bash
-docker compose up -d --build postgres backend graphql-gateway
+docker compose up -d --build
 ```
 
 O backend aguarda o PostgreSQL ficar disponível e executa automaticamente:
 
 1. As migrations do banco.
-2. O seed com as sugestões iniciais.
+2. O seed idempotente com 75 sugestões jurídicas.
 
 Confira se os serviços estão rodando:
 
@@ -31,9 +42,31 @@ docker compose ps
 
 Os serviços ficam disponíveis em:
 
+- Frontend: `http://localhost:5173`
 - GraphQL Gateway: `http://localhost:4000`
-- Backend Fastify: `http://localhost:3001`
-- PostgreSQL: `localhost:5434`
+
+O backend e o PostgreSQL ficam acessíveis somente na rede interna do Docker.
+
+### Variáveis de ambiente
+
+Os valores padrão funcionam sem configuração. Para personalizá-los:
+
+```bash
+cp .env.example .env
+```
+
+| Variável | Finalidade | Padrão |
+| --- | --- | --- |
+| `POSTGRES_DB` | Nome do banco | `justarter` |
+| `POSTGRES_USER` | Usuário do banco | `postgres` |
+| `POSTGRES_PASSWORD` | Senha do banco | `postgres` |
+| `PGPOOL_MAX` | Máximo de conexões no pool | `10` |
+| `PG_IDLE_TIMEOUT_MS` | Timeout de conexão ociosa | `30000` |
+| `PG_CONNECTION_TIMEOUT_MS` | Timeout para abrir conexão | `5000` |
+| `BACKEND_TIMEOUT_MS` | Timeout do gateway para o backend | `2000` |
+| `GATEWAY_PORT` | Porta pública do GraphQL | `4000` |
+| `FRONTEND_PORT` | Porta pública do frontend | `5173` |
+| `VITE_GRAPHQL_URL` | URL GraphQL usada pelo frontend | `http://localhost:4000/` |
 
 Credenciais do PostgreSQL:
 
@@ -48,7 +81,8 @@ Senha: postgres
 ### Healthcheck
 
 ```bash
-curl http://localhost:3001/health
+docker compose exec -T backend \
+  wget -qO- http://localhost:3001/health
 ```
 
 Resposta esperada:
@@ -60,12 +94,14 @@ Resposta esperada:
 ### Buscar sugestões
 
 ```bash
-curl "http://localhost:3001/suggestions?q=danos"
+docker compose exec -T backend \
+  wget -qO- "http://localhost:3001/suggestions?q=danos"
 ```
 
 O parâmetro `q` é obrigatório. A busca:
 
 - normaliza espaços e letras maiúsculas;
+- aceita a busca com ou sem acentos;
 - retorna uma lista vazia para termos com menos de 4 caracteres;
 - busca termos pelo prefixo informado;
 - ordena por popularidade e, em caso de empate, por ordem alfabética;
@@ -74,7 +110,8 @@ O parâmetro `q` é obrigatório. A busca:
 Também é possível informar um limite entre 1 e 20:
 
 ```bash
-curl "http://localhost:3001/suggestions?q=danos&limit=1"
+docker compose exec -T backend \
+  wget -qO- "http://localhost:3001/suggestions?q=danos&limit=1"
 ```
 
 Exemplo de resposta:
@@ -95,14 +132,18 @@ Exemplo de resposta:
 Termos com menos de 4 caracteres retornam uma lista vazia:
 
 ```bash
-curl "http://localhost:3001/suggestions?q=abc"
+docker compose exec -T backend \
+  wget -qO- "http://localhost:3001/suggestions?q=abc"
 ```
 
 Parâmetros ausentes ou inválidos retornam HTTP 400:
 
 ```bash
-curl -i "http://localhost:3001/suggestions"
-curl -i "http://localhost:3001/suggestions?q=danos&limit=21"
+docker compose exec -T backend \
+  wget -S -O- "http://localhost:3001/suggestions"
+
+docker compose exec -T backend \
+  wget -S -O- "http://localhost:3001/suggestions?q=danos&limit=21"
 ```
 
 ## Testando o GraphQL Gateway
@@ -179,26 +220,35 @@ O schema mantém temporariamente `suggestionById` e `createSuggestion`, mas o
 backend atual não oferece essas operações. Elas retornam `null` até serem
 implementadas ou removidas.
 
+## Testando o frontend
+
+Acesse `http://localhost:5173` e digite pelo menos quatro caracteres, como
+`ação`, `acao` ou `danos`. As sugestões aparecem automaticamente após 250 ms.
+
+A lista exibe aproximadamente 10 itens antes do scroll e recebe no máximo 20
+resultados. É possível selecionar uma sugestão com mouse, toque ou com as teclas
+`↑`, `↓` e `Enter`. A tecla `Escape` fecha a lista.
+
 ## Executando os testes automatizados
 
 ### Backend
 
 ```bash
 cd backend
-npm install
+npm ci
 npm run lint
 npm run build
 npm test
 cd ..
 ```
 
-O backend possui 11 testes do repository, do serviço e das rotas Fastify.
+O backend possui 12 testes do repository, do serviço e das rotas Fastify.
 
 ### GraphQL Gateway
 
 ```bash
 cd graphql-gateway
-npm install
+npm ci
 npm run lint
 npm run build
 npm test
@@ -211,14 +261,14 @@ O gateway possui 10 testes do cliente HTTP, dos resolvers e da query GraphQL.
 
 ```bash
 cd frontend
-npm install
+npm ci
 npm run lint
 npm run build
 npm test
 cd ..
 ```
 
-O frontend possui lint, teste de componente e build de produção configurados.
+O frontend possui 9 testes dos principais comportamentos do autocomplete.
 
 ## Integração contínua
 
@@ -228,8 +278,9 @@ O workflow `.github/workflows/ci.yml` é executado em:
 - todo push na branch `main`.
 
 A CI cria jobs independentes para backend, GraphQL Gateway e frontend. Cada job
-instala as dependências pelo lockfile e executa lint, testes e build. Um job
-adicional valida o arquivo `docker-compose.yml`.
+instala as dependências pelo lockfile e executa lint, testes e build. O job de
+integração constrói o Compose, aguarda os healthchecks e valida migrations,
+seed idempotente, frontend e query GraphQL.
 
 Para tornar a CI obrigatória antes de integrar um Pull Request, configure a
 proteção da branch `main` no GitHub e selecione os jobs da CI como verificações
@@ -276,7 +327,7 @@ Para apagar o banco e recriá-lo do zero:
 
 ```bash
 docker compose down -v
-docker compose up -d --build postgres backend graphql-gateway
+docker compose up -d --build
 ```
 
 O comando `docker compose down -v` remove permanentemente o volume local do PostgreSQL.
