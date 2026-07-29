@@ -144,7 +144,7 @@
 - [x] Documentar instalação e execução com Docker
 - [x] Documentar comandos de lint, testes e build
 - [x] Documentar variáveis de ambiente
-- [x] Analisar o arquivo `starter/suggestions.js`
+- [] Analisar o arquivo `starter/suggestions.js`
 - [x] Registrar no `COMMENTS.md` o que seria mantido, alterado ou rejeitado
 - [x] Registrar decisões relevantes auxiliadas por IA
 - [x] Registrar limitações e melhorias futuras
