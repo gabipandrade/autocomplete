@@ -1,16 +1,32 @@
-import express from "express";
-import cors from "cors";
-import suggestionsRouter from "./routes/suggestions.js";
+import { buildApp } from "./app.js";
+import { closePool } from "./db.js";
 
-const PORT = process.env.PORT ?? 3001;
+const port = Number(process.env.PORT ?? 3001);
 
-const app = express();
+if (!Number.isInteger(port) || port < 1 || port > 65535) {
+  throw new Error("PORT deve ser um número inteiro entre 1 e 65535");
+}
 
-app.use(cors());
-app.use(express.json());
+const app = buildApp({ logger: true });
 
-app.use("/api/suggestions", suggestionsRouter);
+async function shutdown(signal: string) {
+  app.log.info({ signal }, "Shutting down backend");
+  await app.close();
+  await closePool();
+}
 
-app.listen(PORT, () => {
-  console.log(`✅ Backend running on http://localhost:${PORT}`);
+process.once("SIGINT", () => {
+  void shutdown("SIGINT");
 });
+
+process.once("SIGTERM", () => {
+  void shutdown("SIGTERM");
+});
+
+try {
+  await app.listen({ host: "0.0.0.0", port });
+} catch (error) {
+  app.log.error(error);
+  await closePool();
+  process.exitCode = 1;
+}

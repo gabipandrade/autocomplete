@@ -1,73 +1,66 @@
-import { Router, Request, Response } from "express";
-import { query } from "../db.js";
+import type { FastifyPluginAsync } from "fastify";
+import type { SuggestionSearchService } from "../services/suggestions.service.js";
+import { MAX_SUGGESTIONS } from "../services/suggestions.service.js";
 
-const router = Router();
+interface SearchQuery {
+  q: string;
+  limit?: number;
+}
 
-// GET /api/suggestions?q=term
-router.get("/", async (req: Request, res: Response) => {
-  try {
-    const { q } = req.query;
+interface SuggestionRoutesOptions {
+  service: SuggestionSearchService;
+}
 
-    if (!q || typeof q !== "string" || q.length < 4) {
-      return res.status(400).json({ error: "Query must be at least 4 characters" });
-    }
+const querySchema = {
+  type: "object",
+  additionalProperties: false,
+  required: ["q"],
+  properties: {
+    q: {
+      type: "string",
+      minLength: 1,
+      maxLength: 255,
+    },
+    limit: {
+      type: "integer",
+      minimum: 1,
+      maximum: MAX_SUGGESTIONS,
+      default: MAX_SUGGESTIONS,
+    },
+  },
+} as const;
 
-    const result = await query(
-      "SELECT id, term, popularity, created_at as createdAt FROM suggestions WHERE term ILIKE $1 LIMIT 20",
-      [`${q}%`]
-    );
+const responseSchema = {
+  type: "array",
+  maxItems: MAX_SUGGESTIONS,
+  items: {
+    type: "object",
+    required: ["id", "term", "popularity", "createdAt"],
+    properties: {
+      id: { type: "integer" },
+      term: { type: "string" },
+      popularity: { type: "integer" },
+      createdAt: { type: "string" },
+    },
+  },
+} as const;
 
-    res.json(result.rows);
-  } catch (error) {
-    console.error("Error fetching suggestions:", error);
-    res.status(500).json({ error: "Failed to fetch suggestions" });
-  }
-});
+const suggestionRoutes: FastifyPluginAsync<SuggestionRoutesOptions> = async (
+  app,
+  { service },
+) => {
+  app.get<{ Querystring: SearchQuery }>(
+    "/suggestions",
+    {
+      schema: {
+        querystring: querySchema,
+        response: {
+          200: responseSchema,
+        },
+      },
+    },
+    async (request) => service.search(request.query.q, request.query.limit),
+  );
+};
 
-// GET /api/suggestions/:id
-router.get("/:id", async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-
-    const result = await query(
-      "SELECT id, term, popularity, created_at as createdAt FROM suggestions WHERE id = $1",
-      [id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Suggestion not found" });
-    }
-
-    res.json(result.rows[0]);
-  } catch (error) {
-    console.error("Error fetching suggestion:", error);
-    res.status(500).json({ error: "Failed to fetch suggestion" });
-  }
-});
-
-// POST /api/suggestions
-router.post("/", async (req: Request, res: Response) => {
-  try {
-    const { term } = req.body;
-
-    if (!term || typeof term !== "string" || term.length < 4) {
-      return res.status(400).json({ error: "Term must be at least 4 characters" });
-    }
-
-    const result = await query(
-      `INSERT INTO suggestions (term, popularity, created_at)
-       VALUES ($1, 1, NOW()) 
-       ON CONFLICT (term) DO UPDATE
-       SET popularity = suggestions.popularity + 1
-       RETURNING id, term, popularity, created_at as createdAt`,
-      [term.toLowerCase()]
-    );
-
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
-    console.error("Error creating suggestion:", error);
-    res.status(500).json({ error: "Failed to create suggestion" });
-  }
-});
-
-export default router;
+export default suggestionRoutes;
