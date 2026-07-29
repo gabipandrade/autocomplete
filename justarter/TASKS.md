@@ -77,26 +77,6 @@
 - [x] Criar teste da query GraphQL
 - [x] Validar lint, testes e build do gateway na CI
 
-### Schema implementado
-
-```graphql
-type Suggestion {
-  id: ID!
-  term: String!
-  popularity: Int!
-  createdAt: String!
-}
-
-type Query {
-  suggestions(query: String!, limit: Int = 20): [Suggestion!]!
-  suggestionById(id: ID!): Suggestion
-}
-
-type Mutation {
-  createSuggestion(term: String!): Suggestion
-}
-```
-
 ---
 
 ## 5. Frontend React
@@ -155,34 +135,35 @@ type Mutation {
 - [x] Rodar testes de cada serviço
 - [x] Rodar build de cada serviço
 - [x] Validar o `docker-compose.yml`
+- [x] Configurar teste de integração Docker na CI
 - [x] Configurar o CI como verificação obrigatória da branch `main`
 
 ### Documentação
 
-- [ ] Documentar arquitetura e responsabilidades dos serviços no `README.md`
-- [ ] Documentar instalação e execução com Docker
-- [ ] Documentar comandos de lint, testes e build
-- [ ] Documentar variáveis de ambiente
-- [ ] Analisar o arquivo `starter/suggestions.js`
-- [ ] Registrar no `COMMENTS.md` o que seria mantido, alterado ou rejeitado
-- [ ] Registrar decisões relevantes auxiliadas por IA
-- [ ] Registrar limitações e melhorias futuras
+- [x] Documentar arquitetura e responsabilidades dos serviços no `README.md`
+- [x] Documentar instalação e execução com Docker
+- [x] Documentar comandos de lint, testes e build
+- [x] Documentar variáveis de ambiente
+- [x] Analisar o arquivo `starter/suggestions.js`
+- [x] Registrar no `COMMENTS.md` o que seria mantido, alterado ou rejeitado
+- [x] Registrar decisões relevantes auxiliadas por IA
+- [x] Registrar limitações e melhorias futuras
 
 ### Validação final
 
-- [ ] Sugestões aparecem somente após 4 caracteres
-- [ ] Nenhum elemento aparece quando não há sugestões
-- [ ] Backend retorna no máximo 20 sugestões
-- [ ] Aproximadamente 10 sugestões ficam visíveis antes do scroll
-- [ ] O trecho correspondente aparece em negrito
-- [ ] Hover e touch destacam o item
-- [ ] Clique atualiza o campo de busca
-- [ ] Sugestões mudam dinamicamente enquanto o usuário digita
-- [ ] Interface funciona corretamente em dispositivos móveis
-- [ ] Frontend acessa somente o GraphQL Gateway
-- [ ] GraphQL Gateway acessa somente o backend
-- [ ] Backend acessa o PostgreSQL
-- [ ] Banco é populado automaticamente
-- [ ] Projeto sobe com `docker compose up`
-- [ ] Todos os testes, lints e builds passam
-- [ ] Todas as mudanças foram integradas por Pull Request
+- [x] Sugestões aparecem somente após 4 caracteres
+- [x] Nenhum elemento aparece quando não há sugestões
+- [x] Backend retorna no máximo 20 sugestões
+- [x] Aproximadamente 10 sugestões ficam visíveis antes do scroll
+- [x] O trecho correspondente aparece em negrito
+- [x] Hover e touch destacam o item
+- [x] Clique atualiza o campo de busca
+- [x] Sugestões mudam dinamicamente enquanto o usuário digita
+- [x] Interface funciona corretamente em dispositivos móveis
+- [x] Frontend acessa somente o GraphQL Gateway
+- [x] GraphQL Gateway acessa somente o backend
+- [x] Backend acessa o PostgreSQL
+- [x] Banco é populado automaticamente
+- [x] Projeto sobe com `docker compose up`
+- [x] Todos os testes, lints e builds passam
+- [x] Todas as mudanças foram integradas por Pull Request

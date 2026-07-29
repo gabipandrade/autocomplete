@@ -73,7 +73,7 @@ idempotente e pool de conexões respeitando a arquitetura existente?
 ### Melhorias futuras
 
 - Calcular `popularity` com base no uso real.
-- Avaliar `pg_trgm` e `unaccent` para erros de digitação e busca sem acentos.
+- Avaliar `pg_trgm` para tolerar erros de digitação.
 
 ---
 
@@ -126,7 +126,7 @@ serviço de busca, normalização, limite de 20 resultados, validação e testes
 
 ### Melhorias futuras
 
-- Automatizar testes de integração com PostgreSQL no CI.
+- Ampliar os testes de integração para falhas de conexão com o PostgreSQL.
 
 ---
 
@@ -221,9 +221,15 @@ somente as portas do frontend e do gateway.
 ### Uso de IA
 
 - **Pergunta:** como fazer o Compose iniciar todos os serviços com segurança?
-- **Aceitei:** healthchecks e dependências por estado saudável.
+- **Aceitei:** healthchecks, dependências saudáveis e integração na CI.
 - **Alterei:** removi do host as portas do backend e do banco.
 - **Rejeitei:** não houve sugestão relevante rejeitada nesta correção.
 
 O ambiente limpo subiu com migrations, seed e 75 sugestões. O fluxo completo
 retornou 20 resultados para `acao`.
+
+### Validação final
+
+- 31 testes, lints e builds aprovados.
+- Docker, migrations, seed e fluxo completo aprovados.
+- Comportamentos do autocomplete validados em desktop e mobile.
