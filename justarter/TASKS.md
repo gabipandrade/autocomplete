@@ -167,3 +167,5 @@
 - [x] Projeto sobe com `docker compose up`
 - [x] Todos os testes, lints e builds passam
 - [x] Todas as mudanças foram integradas por Pull Request
+
+

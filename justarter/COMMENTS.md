@@ -327,3 +327,7 @@ retornou 20 resultados para `acao`.
 - Faria commits menores e mais frequentes para facilitar a leitura do histórico.
   Embora os pull requests tenham sido detalhados,  fiz apenas um
   commit depois de concluir cada etapa principal.
+
+- Incluíria a configuração da CI em uma etapa anterior do planejamento, pois, ao longo do desenvolvimento, percebi que o ideal seria tê-la disponível desde o início para validar automaticamente cada Pull Request.
+
+- Incluiria mais detalhes dos requisitos na task para facilitar a verificação final.
