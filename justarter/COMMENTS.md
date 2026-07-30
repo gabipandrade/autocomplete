@@ -48,11 +48,10 @@ backend separado, persistência automatizada e execução com Docker Compose?
 - React, Vite e Apollo Client no frontend.
 - Apollo Server com Node.js e TypeScript no gateway.
 - Vitest para testes e GitHub Actions para CI.
-
+As stacks sugeridas pela IA são bastante usadas para desenvolvimento web e faziam sentido para o projeto
 **O que alterei:**
 
-- Substituí o SQLite sugerido por PostgreSQL, pensando em possíveis evoluções
-  de busca e mantendo uma tecnologia adequada para produção.
+- Substituí o SQLite sugerido por PostgreSQL, pensando em possíveis evoluções de busca e mantendo uma tecnologia adequada para produção.
 
 **O que rejeitei:**
 
@@ -196,8 +195,6 @@ testes mantendo o limite de 20 sugestões e um timeout adequado ao autocomplete?
   falha no backend deixe o autocomplete aguardando indefinidamente.
 - Separar a criação do Apollo Server para permitir testes da query sem abrir
   uma porta de rede.
-- Criar um cliente HTTP injetável, facilitando o isolamento dos resolvers nos
-  testes.
 - Normalizar o termo e limitar o valor solicitado a 20 antes de chamar o
   backend, evitando encaminhar entradas desnecessárias ou inválidas.
 
@@ -319,8 +316,8 @@ retornou 20 resultados para `acao`.
 - Melhoraria o algoritmo de busca para identificar erros de digitação e sugerir
   termos semelhantes.
 - Aprimoraria o frontend com funcionalidades adicionais, como modo noturno.
-- Adicionaria mais campos ao banco de dados para apresentar informações mais
-  completas nos resultados da pesquisa.
+- Adicionaria mais campos ao banco de dados para apresentar informações mais completas nos resultados da pesquisa.
+- Deixaria a linguagem da documentação mais explicativa para iniciantes.
 
 ### O que eu faria diferente
 
